@@ -14,80 +14,83 @@ async function getContent(url) {
 function extractRanking(content) {
   const lines = content.split('\n');
   const ranking = [];
+  let foundMainTable = false;
   
   console.log('Analizando contenido...');
-  
-  // Buscar la sección de la tabla
-  let tableSection = false;
-  let dataSection = false;
 
+  // Buscar la tabla principal que contiene los usuarios
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
-    
-    // Debug: mostrar líneas que podrían ser relevantes
-    if (line.includes('|') || line.includes('table')) {
-      console.log(`Línea ${i}: ${line}`);
+
+    // Buscar la línea que indica el número total de usuarios
+    if (line.includes('users') && line.includes('Cuba')) {
+      console.log(`Encontrada línea de usuarios: ${line}`);
     }
 
-    // Identificar el inicio de la sección de datos
-    if (line.includes('| #') && line.includes('| Name') && line.includes('| Company')) {
-      console.log('Encontrado encabezado de la tabla');
-      dataSection = true;
-      continue;
-    }
-
-    // Saltar línea de separación
-    if (line.startsWith('|--')) {
-      continue;
-    }
-
-    // Procesar datos
-    if (dataSection && line.startsWith('|')) {
-      try {
-        const columns = line.split('|')
-          .map(col => col.trim())
-          .filter(Boolean);
-
-        if (columns.length >= 6) {
-          // Extraer información
-          const nameMatch = columns[1].match(/\[([^\]]+)\]/);
-          const entry = {
-            position: parseInt(columns[0]),
-            name: nameMatch ? nameMatch[1] : columns[1].replace(/\[|\]/g, ''),
-            company: columns[2],
-            publicContributions: parseInt(columns[5].replace(/,/g, '')),
-            totalContributions: parseInt(columns[6].replace(/,/g, ''))
-          };
-
-          if (!isNaN(entry.position) && !isNaN(entry.totalContributions)) {
-            ranking.push(entry);
-            console.log(`Procesado: ${entry.name} (${entry.totalContributions} contribuciones)`);
-          }
-        }
-      } catch (error) {
-        console.log(`Error procesando línea: ${line}`);
-        console.log(`Error: ${error.message}`);
+    // Buscar la tabla principal después de las tablas de navegación
+    if (line.startsWith('|') && 
+        (line.includes('Name') || line.includes('Nombre')) && 
+        (line.includes('Total Contributions') || line.includes('Contribuciones Totales'))) {
+      console.log(`Encontrada tabla principal en línea ${i}: ${line}`);
+      foundMainTable = true;
+      
+      // Mostrar las siguientes líneas para verificar
+      console.log('\nPrimeras filas de la tabla:');
+      for (let j = i; j < Math.min(i + 5, lines.length); j++) {
+        console.log(`${j}: ${lines[j]}`);
       }
-    }
+      
+      // Comenzar a procesar desde la siguiente línea
+      i += 2; // Saltar el encabezado y la línea de separación
+      
+      while (i < lines.length && lines[i].trim().startsWith('|')) {
+        const row = lines[i].trim();
+        try {
+          const columns = row.split('|')
+            .map(col => col.trim())
+            .filter(Boolean);
 
-    // Salir si encontramos el final de la sección
-    if (dataSection && (line.includes('### 🚀') || line.includes('</table>'))) {
+          if (columns.length >= 7) {
+            const nameMatch = columns[1].match(/\[([^\]]+)\]/);
+            const entry = {
+              position: parseInt(columns[0]),
+              name: nameMatch ? nameMatch[1] : columns[1],
+              company: columns[2],
+              publicContributions: parseInt(columns[5].replace(/,/g, '')),
+              totalContributions: parseInt(columns[6].replace(/,/g, ''))
+            };
+
+            if (!isNaN(entry.position) && !isNaN(entry.totalContributions)) {
+              ranking.push(entry);
+              if (ranking.length <= 3) {
+                console.log(`Procesado: ${entry.name} (${entry.totalContributions} contribuciones)`);
+              }
+            }
+          }
+        } catch (error) {
+          console.log(`Error procesando línea ${i}: ${row}`);
+        }
+        i++;
+      }
       break;
     }
   }
 
-  if (ranking.length === 0) {
-    console.log('\nNo se encontraron datos. Mostrando estructura del documento:');
-    let count = 0;
+  if (!foundMainTable) {
+    console.log('\nNo se encontró la tabla principal. Mostrando líneas con posibles tablas:');
     lines.forEach((line, index) => {
-      if (line.trim() && count < 20) {
-        console.log(`${index}: ${line.substring(0, 100)}`);
-        count++;
+      if (line.includes('|') && (line.includes('Name') || line.includes('Contributions'))) {
+        console.log(`${index}: ${line}`);
       }
     });
-    throw new Error('No se encontraron entradas válidas en la tabla');
+    throw new Error('No se encontró la tabla principal de usuarios');
   }
 
+  if (ranking.length === 0) {
+    throw new Error('No se pudieron extraer datos de la tabla');
+  }
+
+  console.log(`\nSe encontraron ${ranking.length} usuarios en total`);
   return ranking;
 }
 
@@ -102,8 +105,6 @@ async function main() {
     const ranking = extractRanking(content);
     
     if (ranking.length > 0) {
-      console.log('\nRanking extraído exitosamente');
-      console.log(`Total de usuarios: ${ranking.length}`);
       console.log('\nPrimeros 3 usuarios:');
       console.log(JSON.stringify(ranking.slice(0, 3), null, 2));
     }
