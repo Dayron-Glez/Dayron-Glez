@@ -96,30 +96,38 @@ async function updateReadme(ranking) {
 
     let content = await fs.readFile('./README.md', 'utf8');
 
-    // Crear la sección de ranking de forma dinámica
     const rankingSection = `# 🏆 GitHub Ranking Cuba
-<p align="center">
-  <b>Posición actual:</b> #${miPosicion.position} entre desarrolladores cubanos<br>
-  <b>Contribuciones totales:</b> ${miPosicion.totalContributions}<br>
-  <b>Contribuciones públicas:</b> ${miPosicion.publicContributions}<br>
-  <i>Última actualización: ${new Date().toLocaleDateString()}</i>
-</p>`;
+<div align="center">
+  <table>
+    <tr>
+      <td align="center">
+        <img width="50" src="https://github.com/tandpfun/skill-icons/blob/main/icons/Github-Dark.svg" alt="GitHub Rank">
+      </td>
+      <td>
+        <h3>Ranking entre desarrolladores cubanos</h3>
+        <ul align="left">
+          <li>🥇 <b>Posición actual:</b> #${miPosicion.position}</li>
+          <li>🔥 <b>Contribuciones totales:</b> ${miPosicion.totalContributions}</li>
+          <li>📊 <b>Contribuciones públicas:</b> ${miPosicion.publicContributions}</li>
+        </ul>
+        <sub><i>Última actualización: ${new Date().toLocaleDateString()}</i></sub>
+      </td>
+    </tr>
+  </table>
+</div>`;
 
-    // Si ya existe la sección de ranking, reemplazarla
     if (content.includes('# 🏆 GitHub Ranking Cuba')) {
       content = content.replace(
-        /# 🏆 GitHub Ranking Cuba[\s\S]*?<\/p>/m,
+        /# 🏆 GitHub Ranking Cuba[\s\S]*?<\/div>/m,
         rankingSection
       );
     } else {
-      // Si no existe, agregarla después de la sección de Stats
       const statsEndIndex = content.indexOf('</p>', content.indexOf('github-readme-streak-stats'));
       if (statsEndIndex !== -1) {
         content = content.slice(0, statsEndIndex + 4) + 
                  '\n\n' + rankingSection + 
                  content.slice(statsEndIndex + 4);
       } else {
-        // Si no encuentra la sección de stats, agregar al final
         content += '\n\n' + rankingSection;
       }
     }
