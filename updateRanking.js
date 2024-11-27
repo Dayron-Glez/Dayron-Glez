@@ -1,4 +1,5 @@
 const https = require('https');
+const fs = require('fs').promises;
 
 async function getContent(url) {
   return new Promise((resolve, reject) => {
@@ -14,13 +15,11 @@ async function getContent(url) {
 function extractRanking(content) {
   console.log('Buscando tabla de usuarios...');
 
-  // Buscar la tabla HTML
   const tableStart = content.indexOf('<table>');
   if (tableStart === -1) {
     throw new Error('No se encontró la tabla HTML');
   }
 
-  // Encontrar la tabla que contiene los rankings (la que tiene el encabezado correcto)
   const tables = content.split('<table>');
   let rankingTable = null;
 
@@ -42,26 +41,21 @@ function extractRanking(content) {
   const ranking = [];
   const rows = rankingTable.split('<tr>');
 
-  // Procesar cada fila
   for (const row of rows) {
     if (!row.includes('<td>')) continue;
 
     try {
-      // Extraer posición
       const posMatch = row.match(/<td>(\d+)<\/td>/);
       if (!posMatch) continue;
       const position = parseInt(posMatch[1]);
 
-      // Extraer nombre
       const nameMatch = row.match(/<br\/>\s*([^<]+)\s*<\/td>/);
       if (!nameMatch) continue;
       const name = nameMatch[1].trim();
 
-      // Extraer empresa
       const companyMatch = row.match(/<td>([^<]+)<\/td>/g);
       const company = companyMatch ? companyMatch[2].replace(/<\/?td>/g, '').trim() : '';
 
-      // Extraer contribuciones
       const contribMatches = row.match(/<td>(\d+)<\/td>/g);
       if (!contribMatches || contribMatches.length < 2) continue;
 
@@ -93,6 +87,51 @@ function extractRanking(content) {
   return ranking;
 }
 
+async function updateReadme(ranking) {
+  try {
+    const miPosicion = ranking.find(user => user.name.includes('Dayron'));
+    if (!miPosicion) {
+      throw new Error('No se encontró tu usuario en el ranking');
+    }
+
+    let content = await fs.readFile('./README.md', 'utf8');
+
+    // Crear la sección de ranking de forma dinámica
+    const rankingSection = `# 🏆 GitHub Ranking Cuba
+<p align="center">
+  <b>Posición actual:</b> #${miPosicion.position} entre desarrolladores cubanos<br>
+  <b>Contribuciones totales:</b> ${miPosicion.totalContributions}<br>
+  <b>Contribuciones públicas:</b> ${miPosicion.publicContributions}<br>
+  <i>Última actualización: ${new Date().toLocaleDateString()}</i>
+</p>`;
+
+    // Si ya existe la sección de ranking, reemplazarla
+    if (content.includes('# 🏆 GitHub Ranking Cuba')) {
+      content = content.replace(
+        /# 🏆 GitHub Ranking Cuba[\s\S]*?<\/p>/m,
+        rankingSection
+      );
+    } else {
+      // Si no existe, agregarla después de la sección de Stats
+      const statsEndIndex = content.indexOf('</p>', content.indexOf('github-readme-streak-stats'));
+      if (statsEndIndex !== -1) {
+        content = content.slice(0, statsEndIndex + 4) + 
+                 '\n\n' + rankingSection + 
+                 content.slice(statsEndIndex + 4);
+      } else {
+        // Si no encuentra la sección de stats, agregar al final
+        content += '\n\n' + rankingSection;
+      }
+    }
+
+    await fs.writeFile('./README.md', content, 'utf8');
+    console.log('README.md actualizado exitosamente con la posición:', miPosicion.position);
+  } catch (error) {
+    console.error('Error actualizando README:', error.message);
+    throw error;
+  }
+}
+
 async function main() {
   try {
     const url = 'https://raw.githubusercontent.com/gayanvoice/top-github-users/main/markdown/total_contributions/cuba.md';
@@ -114,9 +153,9 @@ async function main() {
       if (tuPosicion) {
         console.log('\nTu posición:');
         console.log(JSON.stringify(tuPosicion, null, 2));
+        await updateReadme(ranking);
       }
     }
-
   } catch (error) {
     console.error('Error:', error.message);
     throw error;

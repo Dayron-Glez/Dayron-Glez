@@ -40,11 +40,14 @@
 </p>
   
  
+# 🏆 GitHub Ranking Cuba
 <p align="center">
-Soy uno de los contribuyentes de GitHub en Cuba según el ranking (posición: <a href="https://github.com/Dayron-Glez">).
+  <b>Posición actual:</b> #${position} entre desarrolladores cubanos<br>
+  <b>Contribuciones totales:</b> ${totalContributions}<br>
+  <b>Contribuciones públicas:</b> ${publicContributions}<br>
+  <i>Última actualización: ${date}</i>
 </p>
 
-  
 <!--
 **Dayron-Glez/Dayron-Glez** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
 
