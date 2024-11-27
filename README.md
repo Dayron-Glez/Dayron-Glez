@@ -41,12 +41,24 @@
   
  
 # 🏆 GitHub Ranking Cuba
-<p align="center">
-  <b>Posición actual:</b> #147 entre desarrolladores cubanos<br>
-  <b>Contribuciones totales:</b> 333<br>
-  <b>Contribuciones públicas:</b> 117<br>
-  <i>Última actualización: 11/27/2024</i>
-</p>
+<div align="center">
+  <table>
+    <tr>
+      <td align="center">
+        <img width="50" src="https://github.com/tandpfun/skill-icons/blob/main/icons/Github-Dark.svg" alt="GitHub Rank">
+      </td>
+      <td>
+        <h3>Ranking entre desarrolladores cubanos</h3>
+        <ul align="left">
+          <li>🥇 <b>Posición actual:</b> #${position}</li>
+          <li>🔥 <b>Contribuciones totales:</b> ${totalContributions}</li>
+          <li>📊 <b>Contribuciones públicas:</b> ${publicContributions}</li>
+        </ul>
+        <sub><i>Última actualización: ${date}</i></sub>
+      </td>
+    </tr>
+  </table>
+</div>
 
 <!--
 **Dayron-Glez/Dayron-Glez** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
