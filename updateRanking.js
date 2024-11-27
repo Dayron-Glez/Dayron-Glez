@@ -5,6 +5,35 @@ const cheerio = require('cheerio');
 const GITHUB_URL = 'https://raw.githubusercontent.com/gayanvoice/top-github-users/main/markdown/total_contributions/cuba.md';
 const GITHUB_USERNAME = 'Dayron-Glez';
 
+function extractRanking(content) {
+  const $ = cheerio.load(content);
+  
+  // Buscar la tabla que contiene el ranking (la que tiene las columnas específicas)
+  const rankingTable = $('table').filter((i, table) => {
+    const headers = $(table).find('th').map((i, el) => $(el).text()).get();
+    return headers.includes('#') && 
+           headers.includes('Name') && 
+           headers.includes('Company') &&
+           headers.includes('Public Contributions') &&
+           headers.includes('Total Contributions');
+  });
+
+  // Extraer los datos de la tabla
+  const ranking = [];
+  rankingTable.find('tr').slice(1).each((i, row) => {
+    const cols = $(row).find('td');
+    ranking.push({
+      position: $(cols[0]).text().trim(),
+      name: $(cols[1]).text().trim(),
+      company: $(cols[2]).text().trim(),
+      publicContributions: parseInt($(cols[5]).text().trim()),
+      totalContributions: parseInt($(cols[6]).text().trim())
+    });
+  });
+
+  return ranking;
+}
+
 (async () => {
   try {
     const response = await fetch(GITHUB_URL);
