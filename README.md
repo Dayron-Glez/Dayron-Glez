@@ -42,10 +42,10 @@
  
 # 🏆 GitHub Ranking Cuba
 <p align="center">
-  <b>Posición actual:</b> #${position} entre desarrolladores cubanos<br>
-  <b>Contribuciones totales:</b> ${totalContributions}<br>
-  <b>Contribuciones públicas:</b> ${publicContributions}<br>
-  <i>Última actualización: ${date}</i>
+  <b>Posición actual:</b> #147 entre desarrolladores cubanos<br>
+  <b>Contribuciones totales:</b> 333<br>
+  <b>Contribuciones públicas:</b> 117<br>
+  <i>Última actualización: 11/27/2024</i>
 </p>
 
 <!--
