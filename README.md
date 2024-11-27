@@ -41,7 +41,7 @@
   
  
 <p align="center">
-Soy uno de los principales contribuyentes de GitHub en Cuba.
+Soy uno de los contribuyentes de GitHub en Cuba según el ranking (posición: <a href="https://github.com/Dayron-Glez">).
 </p>
 
   
