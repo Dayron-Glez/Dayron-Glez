@@ -1,0 +1,45 @@
+name: Update GitHub Ranking
+
+# Eventos que activan este flujo de trabajo
+on:
+  schedule:
+    - cron: '0 0 * * *' # Ejecutar todos los días a medianoche (UTC)
+  workflow_dispatch: # Permite ejecución manual desde la pestaña Actions
+
+jobs:
+  update-ranking:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Clonar el repositorio
+      - name: Clonar el repositorio
+        uses: actions/checkout@v3
+
+      # 2. Configurar Node.js
+      - name: Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18' # Especifica la versión de Node.js
+
+      # 3. Instalar dependencias necesarias
+      - name: Instalar dependencias
+        run: npm install node-fetch
+
+      # 4. Ejecutar el script de actualización
+      - name: Ejecutar script de actualización
+        run: node updateRanking.js
+
+      # 5. Confirmar los cambios realizados al README.md
+      - name: Configurar Git y confirmar cambios
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add README.md
+          git commit -m "Actualizar ranking automáticamente" || echo "No hay cambios para confirmar."
+
+      # 6. Subir los cambios al repositorio
+      - name: Subir cambios
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          push: true
