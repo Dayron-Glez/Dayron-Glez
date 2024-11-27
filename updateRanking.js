@@ -12,78 +12,77 @@ async function getContent(url) {
 }
 
 function extractRanking(content) {
-  const lines = content.split('\n');
-  const ranking = [];
-  let foundMainTable = false;
-  
-  console.log('Analizando contenido...');
+  console.log('Buscando tabla de usuarios...');
 
-  // Buscar la tabla principal que contiene los usuarios
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
+  // Buscar la tabla HTML
+  const tableStart = content.indexOf('<table>');
+  if (tableStart === -1) {
+    throw new Error('No se encontró la tabla HTML');
+  }
 
-    // Buscar la línea que indica el número total de usuarios
-    if (line.includes('users') && line.includes('Cuba')) {
-      console.log(`Encontrada línea de usuarios: ${line}`);
-    }
+  // Encontrar la tabla que contiene los rankings (la que tiene el encabezado correcto)
+  const tables = content.split('<table>');
+  let rankingTable = null;
 
-    // Buscar la tabla principal después de las tablas de navegación
-    if (line.startsWith('|') && 
-        (line.includes('Name') || line.includes('Nombre')) && 
-        (line.includes('Total Contributions') || line.includes('Contribuciones Totales'))) {
-      console.log(`Encontrada tabla principal en línea ${i}: ${line}`);
-      foundMainTable = true;
-      
-      // Mostrar las siguientes líneas para verificar
-      console.log('\nPrimeras filas de la tabla:');
-      for (let j = i; j < Math.min(i + 5, lines.length); j++) {
-        console.log(`${j}: ${lines[j]}`);
-      }
-      
-      // Comenzar a procesar desde la siguiente línea
-      i += 2; // Saltar el encabezado y la línea de separación
-      
-      while (i < lines.length && lines[i].trim().startsWith('|')) {
-        const row = lines[i].trim();
-        try {
-          const columns = row.split('|')
-            .map(col => col.trim())
-            .filter(Boolean);
-
-          if (columns.length >= 7) {
-            const nameMatch = columns[1].match(/\[([^\]]+)\]/);
-            const entry = {
-              position: parseInt(columns[0]),
-              name: nameMatch ? nameMatch[1] : columns[1],
-              company: columns[2],
-              publicContributions: parseInt(columns[5].replace(/,/g, '')),
-              totalContributions: parseInt(columns[6].replace(/,/g, ''))
-            };
-
-            if (!isNaN(entry.position) && !isNaN(entry.totalContributions)) {
-              ranking.push(entry);
-              if (ranking.length <= 3) {
-                console.log(`Procesado: ${entry.name} (${entry.totalContributions} contribuciones)`);
-              }
-            }
-          }
-        } catch (error) {
-          console.log(`Error procesando línea ${i}: ${row}`);
-        }
-        i++;
-      }
+  for (const table of tables) {
+    if (table.includes('<th>#</th>') && 
+        table.includes('<th>Name</th>') && 
+        table.includes('<th>Total Contributions</th>')) {
+      rankingTable = table;
       break;
     }
   }
 
-  if (!foundMainTable) {
-    console.log('\nNo se encontró la tabla principal. Mostrando líneas con posibles tablas:');
-    lines.forEach((line, index) => {
-      if (line.includes('|') && (line.includes('Name') || line.includes('Contributions'))) {
-        console.log(`${index}: ${line}`);
+  if (!rankingTable) {
+    throw new Error('No se encontró la tabla de rankings');
+  }
+
+  console.log('Tabla de rankings encontrada. Procesando usuarios...');
+
+  const ranking = [];
+  const rows = rankingTable.split('<tr>');
+
+  // Procesar cada fila
+  for (const row of rows) {
+    if (!row.includes('<td>')) continue;
+
+    try {
+      // Extraer posición
+      const posMatch = row.match(/<td>(\d+)<\/td>/);
+      if (!posMatch) continue;
+      const position = parseInt(posMatch[1]);
+
+      // Extraer nombre
+      const nameMatch = row.match(/<br\/>\s*([^<]+)\s*<\/td>/);
+      if (!nameMatch) continue;
+      const name = nameMatch[1].trim();
+
+      // Extraer empresa
+      const companyMatch = row.match(/<td>([^<]+)<\/td>/g);
+      const company = companyMatch ? companyMatch[2].replace(/<\/?td>/g, '').trim() : '';
+
+      // Extraer contribuciones
+      const contribMatches = row.match(/<td>(\d+)<\/td>/g);
+      if (!contribMatches || contribMatches.length < 2) continue;
+
+      const publicContrib = parseInt(contribMatches[contribMatches.length - 2].replace(/<\/?td>/g, ''));
+      const totalContrib = parseInt(contribMatches[contribMatches.length - 1].replace(/<\/?td>/g, ''));
+
+      ranking.push({
+        position,
+        name,
+        company,
+        publicContributions: publicContrib,
+        totalContributions: totalContrib
+      });
+
+      if (ranking.length <= 3 || name.includes('Dayron')) {
+        console.log(`Procesado: #${position} ${name} (${totalContrib} contribuciones)`);
       }
-    });
-    throw new Error('No se encontró la tabla principal de usuarios');
+    } catch (error) {
+      console.log(`Error procesando fila: ${error.message}`);
+      continue;
+    }
   }
 
   if (ranking.length === 0) {
@@ -105,8 +104,17 @@ async function main() {
     const ranking = extractRanking(content);
     
     if (ranking.length > 0) {
-      console.log('\nPrimeros 3 usuarios:');
-      console.log(JSON.stringify(ranking.slice(0, 3), null, 2));
+      console.log('\nPrimeros 3 usuarios y tu posición:');
+      const top3 = ranking.slice(0, 3);
+      const tuPosicion = ranking.find(user => user.name.includes('Dayron'));
+      
+      console.log('\nTop 3:');
+      console.log(JSON.stringify(top3, null, 2));
+      
+      if (tuPosicion) {
+        console.log('\nTu posición:');
+        console.log(JSON.stringify(tuPosicion, null, 2));
+      }
     }
 
   } catch (error) {
