@@ -9,20 +9,31 @@ const GITHUB_USERNAME = 'Dayron-Glez';
     const response = await fetch(GITHUB_URL);
     const markdown = await response.text();
 
+    // Depuración: Imprimir las primeras líneas del contenido
+    console.log('Primeras 10 líneas del contenido:');
+    console.log(markdown.split('\n').slice(0, 10).join('\n'));
+
     // Busca tu posición en el archivo
     const lines = markdown.split('\n');
     const line = lines.find((line) => line.includes(GITHUB_USERNAME));
 
-    if (line) {
-      const rank = line.split('|')[0].trim(); // El ranking está en la primera columna
-      const readmePath = './README.md';
+    // Depuración: Imprimir la línea encontrada
+    console.log('Línea encontrada:', line);
 
-      // Carga tu README.md actual
+    if (line) {
+      // Depuración: Imprimir el proceso de extracción del ranking
+      const columns = line.split('|');
+      console.log('Columnas:', columns);
+      
+      const rank = columns[0].trim();
+      console.log('Ranking extraído:', rank);
+
+      const readmePath = './README.md';
       const readme = fs.readFileSync(readmePath, 'utf-8');
 
       // Actualiza el ranking en el README.md
       const updatedReadme = readme.replace(
-        /Soy uno de los principales contribuyentes de GitHub en Cuba.*?\n/,
+        /Soy uno de los (?:principales )?contribuyentes de GitHub en Cuba.*?\n/,
         `Soy uno de los contribuyentes de GitHub en Cuba según el ranking (posición: ${rank}).\n`
       );
 
@@ -31,8 +42,15 @@ const GITHUB_USERNAME = 'Dayron-Glez';
       console.log('README.md actualizado con éxito.');
     } else {
       console.error(`No se encontró el usuario "${GITHUB_USERNAME}" en el ranking.`);
+      
+      // Depuración: Buscar coincidencias parciales
+      const possibleMatches = lines.filter(line => 
+        line.toLowerCase().includes(GITHUB_USERNAME.toLowerCase())
+      );
+      console.log('Posibles coincidencias encontradas:', possibleMatches);
     }
   } catch (error) {
     console.error('Error al obtener el ranking:', error);
+    console.error('Error completo:', error.stack);
   }
 })();
