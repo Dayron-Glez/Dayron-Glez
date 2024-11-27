@@ -12,56 +12,66 @@ async function getContent(url) {
 }
 
 function extractRanking(content) {
-  // Buscar la sección que comienza con el encabezado de la tabla
-  const tableStartIndex = content.indexOf('| # | Name | Company |');
+  // Buscar la sección que comienza con la tabla correcta
+  const tableStartIndex = content.indexOf('| #');
   if (tableStartIndex === -1) {
-    console.log('Buscando encabezado alternativo...');
     throw new Error('No se encontró el inicio de la tabla');
   }
 
   // Dividir el contenido en líneas
   const lines = content.split('\n');
   const ranking = [];
-  let isInTable = false;
+  let tableFound = false;
 
-  for (const line of lines) {
-    // Identificar el inicio de la tabla
-    if (line.includes('| # | Name | Company |')) {
-      isInTable = true;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    
+    // Identificar el inicio de la tabla de ranking
+    if (line.startsWith('| #') && line.includes('Name') && line.includes('Total Contributions')) {
+      tableFound = true;
       continue;
     }
 
     // Saltar la línea de separación
-    if (line.includes('|--') || !line.trim()) {
+    if (line.startsWith('|---') || !line) {
       continue;
     }
 
-    // Procesar solo las líneas que son parte de la tabla
-    if (isInTable && line.startsWith('|')) {
+    // Procesar las filas de la tabla
+    if (tableFound && line.startsWith('|')) {
       try {
-        const columns = line.split('|').map(col => col.trim()).filter(Boolean);
-        
-        if (columns.length >= 6) {
-          // Extraer el nombre del usuario del formato markdown
+        const columns = line.split('|')
+          .map(col => col.trim())
+          .filter(col => col.length > 0);
+
+        if (columns.length >= 7) {
+          // Extraer información del usuario
+          const position = parseInt(columns[0]);
           const nameMatch = columns[1].match(/\[([^\]]+)\]/);
-          const userName = nameMatch ? nameMatch[1] : columns[1];
+          const name = nameMatch ? nameMatch[1] : columns[1];
+          const company = columns[2];
+          const publicContrib = parseInt(columns[5].replace(/,/g, ''));
+          const totalContrib = parseInt(columns[6].replace(/,/g, ''));
 
-          const entry = {
-            position: parseInt(columns[0]),
-            name: userName,
-            company: columns[2],
-            publicContributions: parseInt(columns[4].replace(/,/g, '')),
-            totalContributions: parseInt(columns[5].replace(/,/g, ''))
-          };
-
-          if (!isNaN(entry.position) && !isNaN(entry.totalContributions)) {
-            ranking.push(entry);
+          if (!isNaN(position) && !isNaN(totalContrib)) {
+            ranking.push({
+              position,
+              name,
+              company,
+              publicContributions: publicContrib,
+              totalContributions: totalContrib
+            });
           }
         }
       } catch (error) {
         console.log(`Error procesando línea: ${line}`);
         continue;
       }
+    }
+
+    // Salir si encontramos el final de la tabla
+    if (tableFound && line.startsWith('### 🚀')) {
+      break;
     }
   }
 
@@ -79,16 +89,13 @@ async function main() {
     
     const content = await getContent(url);
     console.log('Contenido obtenido. Longitud:', content.length);
-    
-    // Mostrar las primeras líneas del contenido para debug
-    console.log('Primeras líneas del contenido:');
-    console.log(content.split('\n').slice(0, 10).join('\n'));
 
     const ranking = extractRanking(content);
-    console.log('Usuarios encontrados:', ranking.length);
+    console.log(`Se encontraron ${ranking.length} usuarios`);
     
     if (ranking.length > 0) {
-      console.log('Primeros 3 usuarios:', JSON.stringify(ranking.slice(0, 3), null, 2));
+      console.log('Primeros 3 usuarios:');
+      console.log(JSON.stringify(ranking.slice(0, 3), null, 2));
     }
 
   } catch (error) {
