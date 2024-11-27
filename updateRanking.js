@@ -12,40 +12,57 @@ async function getContent(url) {
 }
 
 function extractRanking(content) {
-  // Dividir el contenido en líneas
   const lines = content.split('\n');
   const ranking = [];
   let tableStarted = false;
-  let headerFound = false;
+  let headerPassed = false;
 
   console.log('Buscando tabla en el contenido...');
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
 
-    // Buscar la línea que contiene "th>#</th"
-    if (line.includes('<tr>') && line.includes('<th>#</th>')) {
-      console.log('Encontrado encabezado de la tabla');
-      headerFound = true;
+    // Mostrar algunas líneas para debug
+    if (i < 20) {
+      console.log(`Línea ${i}: ${line.substring(0, 100)}`);
+    }
+
+    // Buscar el inicio de la tabla
+    if (line.startsWith('<table>')) {
+      console.log('Encontrada etiqueta <table>');
+      tableStarted = true;
       continue;
     }
 
-    // Si encontramos el encabezado, empezar a procesar las filas
-    if (headerFound && line.includes('<tr>')) {
-      try {
-        // Extraer datos usando expresiones regulares
-        const position = line.match(/<td>(\d+)<\/td>/);
-        const name = line.match(/>([^<]+)<\/a>/);
-        const company = line.match(/<td>([^<]+)<\/td>/g);
-        const contributions = line.match(/<td>(\d+)<\/td>/g);
+    if (tableStarted && line.includes('| #') && line.includes('| Name |')) {
+      console.log('Encontrado encabezado de la tabla');
+      headerPassed = true;
+      continue;
+    }
 
-        if (position && name && contributions) {
+    // Saltar la línea de separación
+    if (line.startsWith('|--')) {
+      continue;
+    }
+
+    // Procesar las filas de datos
+    if (headerPassed && line.startsWith('|') && line.includes('|')) {
+      try {
+        const columns = line.split('|')
+          .map(col => col.trim())
+          .filter(col => col.length > 0);
+
+        if (columns.length >= 7) {
+          // Extraer nombre del usuario del formato markdown [nombre](url)
+          const nameMatch = columns[1].match(/\[([^\]]+)\]/);
+          const name = nameMatch ? nameMatch[1] : columns[1];
+
           const entry = {
-            position: parseInt(position[1]),
-            name: name[1].trim(),
-            company: company ? company[2]?.replace(/<\/?td>/g, '').trim() : '',
-            publicContributions: parseInt(contributions[contributions.length - 2].replace(/<\/?td>/g, '')),
-            totalContributions: parseInt(contributions[contributions.length - 1].replace(/<\/?td>/g, ''))
+            position: parseInt(columns[0]),
+            name: name,
+            company: columns[2],
+            publicContributions: parseInt(columns[5].replace(/,/g, '')),
+            totalContributions: parseInt(columns[6].replace(/,/g, ''))
           };
 
           if (!isNaN(entry.position) && !isNaN(entry.totalContributions)) {
@@ -54,25 +71,23 @@ function extractRanking(content) {
           }
         }
       } catch (error) {
-        console.log(`Error procesando línea ${i + 1}:`, error.message);
+        console.log(`Error procesando línea: ${line}`);
         continue;
       }
     }
 
     // Detener si encontramos el final de la tabla
-    if (headerFound && line.includes('</table>')) {
+    if (tableStarted && line.includes('</table>')) {
       break;
     }
   }
 
   if (ranking.length === 0) {
     console.log('No se encontraron entradas en la tabla');
-    console.log('Últimas líneas procesadas:');
-    console.log(lines.slice(-10).join('\n'));
     throw new Error('No se encontraron entradas válidas en la tabla');
   }
 
-  console.log(`Se encontraron ${ranking.length} usuarios en total`);
+  console.log(`\nSe encontraron ${ranking.length} usuarios en total`);
   return ranking;
 }
 
