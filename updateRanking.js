@@ -6,30 +6,37 @@ const GITHUB_URL = 'https://raw.githubusercontent.com/gayanvoice/top-github-user
 const GITHUB_USERNAME = 'Dayron-Glez';
 
 function extractRanking(content) {
-  const $ = cheerio.load(content);
+  // Buscar la tabla específica que contiene el ranking
+  const tableRegex = /<table>\s*<tr>\s*<th>#<\/th>\s*<th>Name<\/th>\s*<th>Company<\/th>.*?<th>Total Contributions<\/th>\s*<\/tr>([\s\S]*?)<\/table>/;
+  const tableMatch = content.match(tableRegex);
   
-  // Buscar la tabla que contiene el ranking (la que tiene las columnas específicas)
-  const rankingTable = $('table').filter((i, table) => {
-    const headers = $(table).find('th').map((i, el) => $(el).text()).get();
-    return headers.includes('#') && 
-           headers.includes('Name') && 
-           headers.includes('Company') &&
-           headers.includes('Public Contributions') &&
-           headers.includes('Total Contributions');
-  });
+  if (!tableMatch) {
+    console.log("Contenido recibido:", content.substring(0, 500)); // Para debug
+    throw new Error('No se encontró la tabla en el contenido');
+  }
 
-  // Extraer los datos de la tabla
+  // Extraer las filas de usuarios
+  const rowRegex = /<tr>\s*<td>(\d+)<\/td>\s*<td>\s*<a[^>]*>([^<]+)<\/a>[^<]*<\/td>\s*<td>([^<]*)<\/td>[^<]*<td>[^<]*<\/td>\s*<td>([^<]*)<\/td>\s*<td>(\d+)<\/td>\s*<td>(\d+)<\/td>\s*<\/tr>/g;
+  
   const ranking = [];
-  rankingTable.find('tr').slice(1).each((i, row) => {
-    const cols = $(row).find('td');
+  let match;
+  const tableContent = tableMatch[1];
+
+  while ((match = rowRegex.exec(tableContent)) !== null) {
     ranking.push({
-      position: $(cols[0]).text().trim(),
-      name: $(cols[1]).text().trim(),
-      company: $(cols[2]).text().trim(),
-      publicContributions: parseInt($(cols[5]).text().trim()),
-      totalContributions: parseInt($(cols[6]).text().trim())
+      position: parseInt(match[1]),
+      name: match[2].trim(),
+      company: match[3].trim(),
+      location: match[4].trim(),
+      publicContributions: parseInt(match[5]),
+      totalContributions: parseInt(match[6])
     });
-  });
+  }
+
+  if (ranking.length === 0) {
+    console.log("Tabla encontrada pero no se pudieron extraer filas");
+    console.log("Contenido de la tabla:", tableContent.substring(0, 500));
+  }
 
   return ranking;
 }
