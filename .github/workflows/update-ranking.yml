@@ -40,4 +40,5 @@ jobs:
       # 6. Subir los cambios al repositorio
       - name: Subir cambios
         run: |
+          git branch -M master
           git push origin master
