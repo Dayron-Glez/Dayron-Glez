@@ -9,23 +9,26 @@ const GITHUB_USERNAME = 'Dayron-Glez';
     const response = await fetch(GITHUB_URL);
     const markdown = await response.text();
 
-    // Depuración: Imprimir las primeras líneas del contenido
-    console.log('Primeras 10 líneas del contenido:');
-    console.log(markdown.split('\n').slice(0, 10).join('\n'));
-
     // Busca tu posición en el archivo
     const lines = markdown.split('\n');
-    const line = lines.find((line) => line.includes(GITHUB_USERNAME));
+    
+    // Encontrar el índice de la línea que contiene tu usuario
+    const userLineIndex = lines.findIndex((line) => line.includes(GITHUB_USERNAME));
+    
+    if (userLineIndex !== -1) {
+      // Retroceder hasta encontrar la línea con el número de ranking
+      let rankLine = '';
+      for (let i = userLineIndex; i >= 0; i--) {
+        if (lines[i].trim().startsWith('|') && lines[i].includes('|')) {
+          rankLine = lines[i];
+          break;
+        }
+      }
 
-    // Depuración: Imprimir la línea encontrada
-    console.log('Línea encontrada:', line);
+      console.log('Línea con ranking encontrada:', rankLine);
 
-    if (line) {
-      // Depuración: Imprimir el proceso de extracción del ranking
-      const columns = line.split('|');
-      console.log('Columnas:', columns);
-      
-      const rank = columns[0].trim();
+      // Extraer el número del ranking
+      const rank = rankLine.split('|')[1].trim();
       console.log('Ranking extraído:', rank);
 
       const readmePath = './README.md';
@@ -42,15 +45,8 @@ const GITHUB_USERNAME = 'Dayron-Glez';
       console.log('README.md actualizado con éxito.');
     } else {
       console.error(`No se encontró el usuario "${GITHUB_USERNAME}" en el ranking.`);
-      
-      // Depuración: Buscar coincidencias parciales
-      const possibleMatches = lines.filter(line => 
-        line.toLowerCase().includes(GITHUB_USERNAME.toLowerCase())
-      );
-      console.log('Posibles coincidencias encontradas:', possibleMatches);
     }
   } catch (error) {
     console.error('Error al obtener el ranking:', error);
-    console.error('Error completo:', error.stack);
   }
 })();
