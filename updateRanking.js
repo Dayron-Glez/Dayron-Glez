@@ -12,73 +12,67 @@ async function getContent(url) {
 }
 
 function extractRanking(content) {
-  // Buscar la tabla que contiene los datos
-  const tableRegex = /\|[\s]*#[\s]*\|[\s]*Name[\s]*\|[\s]*Company[\s]*\|[\s]*Twitter Username[\s]*\|[\s]*Location[\s]*\|[\s]*Public Contributions[\s]*\|[\s]*Total Contributions[\s]*\|/;
-  const tableMatch = content.match(tableRegex);
-
-  if (!tableMatch) {
-    // Mostrar una parte del contenido para debug
-    console.log('Contenido parcial para debug:');
-    console.log(content.substring(0, 1000));
-    throw new Error('No se encontró el inicio de la tabla');
-  }
-
-  console.log('Tabla encontrada. Procesando datos...');
-
-  // Obtener la sección relevante del contenido
-  const contentAfterTable = content.substring(tableMatch.index);
-  const lines = contentAfterTable.split('\n');
+  // Dividir el contenido en líneas
+  const lines = content.split('\n');
   const ranking = [];
-  let isHeader = true;
+  let tableStarted = false;
+  let headerFound = false;
 
-  for (const line of lines) {
-    // Saltar el encabezado y la línea de separación
-    if (isHeader || line.includes('|-')) {
-      isHeader = false;
+  console.log('Buscando tabla en el contenido...');
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+
+    // Buscar la línea que contiene "th>#</th"
+    if (line.includes('<tr>') && line.includes('<th>#</th>')) {
+      console.log('Encontrado encabezado de la tabla');
+      headerFound = true;
       continue;
     }
 
-    // Detener si llegamos al final de la tabla
-    if (line.includes('### 🚀')) {
-      break;
-    }
-
-    // Procesar solo líneas que son parte de la tabla
-    if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+    // Si encontramos el encabezado, empezar a procesar las filas
+    if (headerFound && line.includes('<tr>')) {
       try {
-        const columns = line.split('|')
-          .map(col => col.trim())
-          .filter(col => col.length > 0);
+        // Extraer datos usando expresiones regulares
+        const position = line.match(/<td>(\d+)<\/td>/);
+        const name = line.match(/>([^<]+)<\/a>/);
+        const company = line.match(/<td>([^<]+)<\/td>/g);
+        const contributions = line.match(/<td>(\d+)<\/td>/g);
 
-        if (columns.length >= 7) {
-          // Extraer el nombre del usuario del formato markdown
-          const nameMatch = columns[1].match(/\[([^\]]+)\]/);
-          const userName = nameMatch ? nameMatch[1] : columns[1];
-
+        if (position && name && contributions) {
           const entry = {
-            position: parseInt(columns[0]),
-            name: userName,
-            company: columns[2],
-            publicContributions: parseInt(columns[5].replace(/,/g, '')),
-            totalContributions: parseInt(columns[6].replace(/,/g, ''))
+            position: parseInt(position[1]),
+            name: name[1].trim(),
+            company: company ? company[2]?.replace(/<\/?td>/g, '').trim() : '',
+            publicContributions: parseInt(contributions[contributions.length - 2].replace(/<\/?td>/g, '')),
+            totalContributions: parseInt(contributions[contributions.length - 1].replace(/<\/?td>/g, ''))
           };
 
           if (!isNaN(entry.position) && !isNaN(entry.totalContributions)) {
             ranking.push(entry);
+            console.log(`Procesado usuario #${entry.position}: ${entry.name}`);
           }
         }
       } catch (error) {
-        console.log(`Error procesando línea: ${line}`);
+        console.log(`Error procesando línea ${i + 1}:`, error.message);
         continue;
       }
+    }
+
+    // Detener si encontramos el final de la tabla
+    if (headerFound && line.includes('</table>')) {
+      break;
     }
   }
 
   if (ranking.length === 0) {
+    console.log('No se encontraron entradas en la tabla');
+    console.log('Últimas líneas procesadas:');
+    console.log(lines.slice(-10).join('\n'));
     throw new Error('No se encontraron entradas válidas en la tabla');
   }
 
-  console.log(`Se encontraron ${ranking.length} entradas válidas`);
+  console.log(`Se encontraron ${ranking.length} usuarios en total`);
   return ranking;
 }
 
@@ -90,7 +84,6 @@ async function main() {
     const content = await getContent(url);
     console.log('Contenido obtenido. Longitud:', content.length);
     
-    // Verificar que el contenido no esté vacío
     if (!content) {
       throw new Error('El contenido está vacío');
     }
@@ -98,7 +91,7 @@ async function main() {
     const ranking = extractRanking(content);
     
     if (ranking.length > 0) {
-      console.log('Primeros 3 usuarios:');
+      console.log('\nPrimeros 3 usuarios:');
       console.log(JSON.stringify(ranking.slice(0, 3), null, 2));
     }
 
