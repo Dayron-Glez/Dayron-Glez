@@ -1,3 +1,4 @@
+
 ### Hi there, I'm Dayron Glez 👋
 
  # 👨‍💻 Tools & Skills
@@ -39,7 +40,9 @@
 </p>
   
  
-
+<p align="center">
+Soy uno de los principales contribuyentes de GitHub en Cuba.
+</p>
 
   
 <!--
