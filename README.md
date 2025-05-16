@@ -39,7 +39,8 @@
         <img width="50" src="https://github.com/tandpfun/skill-icons/blob/main/icons/Github-Dark.svg" alt="GitHub Rank">
       </td>
       <td>
-        <h3>Ranking entre desarrolladores cubanos</h3>
+      
+        <h3> <a href="https://github.com/gayanvoice/top-github-users/blob/main/markdown/total_contributions/cuba.md" target="_blank"> Ranking entre desarrolladores cubanos</a></h3>
         <ul align="left">
           <li>🥇 <b>Posición actual:</b> #71</li>
           <li>🔥 <b>Contribuciones totales:</b> 803</li>
