@@ -24,8 +24,8 @@ function extractRanking(content) {
   let rankingTable = null;
 
   for (const table of tables) {
-    if (table.includes('<th>#</th>') && 
-        table.includes('<th>Name</th>') && 
+    if (table.includes('<th>#</th>') &&
+        table.includes('<th>Name</th>') &&
         table.includes('<th>Total Contributions</th>')) {
       rankingTable = table;
       break;
@@ -96,8 +96,10 @@ async function updateReadme(ranking) {
 
     let content = await fs.readFile('./README.md', 'utf8');
 
-    const rankingSection = `# 🏆 GitHub Ranking Cuba
-<div align="center">
+    const rankingSection = `<div align="center">
+  <a href="https://github.com/gayanvoice/top-github-users/blob/main/markdown/total_contributions/cuba.md" target="_blank">
+    <h1>🏆 GitHub Ranking Cuba</h1>
+  </a>
   <table>
     <tr>
       <td align="center">
@@ -124,9 +126,9 @@ async function updateReadme(ranking) {
     } else {
       const statsEndIndex = content.indexOf('</p>', content.indexOf('github-readme-streak-stats'));
       if (statsEndIndex !== -1) {
-        content = content.slice(0, statsEndIndex + 4) + 
-                 '\n\n' + rankingSection + 
-                 content.slice(statsEndIndex + 4);
+        content = content.slice(0, statsEndIndex + 4) +
+          '\n\n' + rankingSection +
+          content.slice(statsEndIndex + 4);
       } else {
         content += '\n\n' + rankingSection;
       }
@@ -144,20 +146,20 @@ async function main() {
   try {
     const url = 'https://raw.githubusercontent.com/gayanvoice/top-github-users/main/markdown/total_contributions/cuba.md';
     console.log('Obteniendo contenido de:', url);
-    
+
     const content = await getContent(url);
     console.log(`Contenido obtenido. Longitud: ${content.length}`);
-    
+
     const ranking = extractRanking(content);
-    
+
     if (ranking.length > 0) {
       console.log('\nPrimeros 3 usuarios y tu posición:');
       const top3 = ranking.slice(0, 3);
       const tuPosicion = ranking.find(user => user.name.includes('Dayron'));
-      
+
       console.log('\nTop 3:');
       console.log(JSON.stringify(top3, null, 2));
-      
+
       if (tuPosicion) {
         console.log('\nTu posición:');
         console.log(JSON.stringify(tuPosicion, null, 2));
@@ -166,11 +168,8 @@ async function main() {
     }
   } catch (error) {
     console.error('Error:', error.message);
-    throw error;
+    process.exit(1);
   }
 }
 
-main().catch(error => {
-  console.error('Error en la ejecución:', error);
-  process.exit(1);
-});
+main();
