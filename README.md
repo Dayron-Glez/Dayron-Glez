@@ -31,21 +31,23 @@
 </p>
   
  
-# 🏆 GitHub Ranking Cuba
 <div align="center">
+  <a href="https://github.com/gayanvoice/top-github-users/blob/main/markdown/total_contributions/cuba.md" target="_blank">
+    <h1>🏆 GitHub Ranking Cuba</h1>
+  </a>
   <table>
     <tr>
       <td align="center">
         <img width="50" src="https://github.com/tandpfun/skill-icons/blob/main/icons/Github-Dark.svg" alt="GitHub Rank">
       </td>
       <td>
-        <h3><a href="https://github.com/gayanvoice/top-github-users/blob/main/markdown/total_contributions/cuba.md" target="_blank">Ranking entre desarrolladores cubanos</a></h3>
+        <h3>Ranking entre desarrolladores cubanos</h3>
         <ul align="left">
           <li>🥇 <b>Posición actual:</b> #71</li>
           <li>🔥 <b>Contribuciones totales:</b> 803</li>
           <li>📊 <b>Contribuciones públicas:</b> 164</li>
         </ul>
-        <sub><i>Última actualización: 5/16/2025</i></sub>
+        <sub><i>Última actualización: 5/17/2025</i></sub>
       </td>
     </tr>
   </table>
