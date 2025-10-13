@@ -1,7 +1,7 @@
-
 ### Hi there, I'm Dayron Glez 👋
 
- # 👨‍💻 Tools & Skills
+# 👨‍💻 Tools & Skills
+
   <p align="center">
 <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/JavaScript.svg" width="48"  title="Javascript">   
 <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/TypeScript.svg" width="48" title="TypeScript">    
@@ -15,12 +15,14 @@
 <img src="https://github.com/tandpfun/skill-icons/blob/main/icons/Adonis.svg" width="48" title="AdonisJs">   
 <p/>
 
-# 📈 Statistics 
+# 📈 Statistics
+
 <h1 align="center">Github Metrics </h1><p align="center">
 <img width="725em" src="https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=Dayron-Glez&theme=github_dark" />
 </p>
 
 # 📊 Stats
+
 <div align="center">  
   <img width="49%" height="195px" src="https://github-readme-stats.vercel.app/api?username=Dayron-Glez&show_icons=true&count_private=true&hide_border=true&title_color=02D9F7FF&icon_color=02D9F7FF&text_color=c9d1d9&bg_color=0d1117" alt="Bastian Dev github stats" /> 
   
@@ -31,7 +33,7 @@
 </p>
   
  
-# 🏆 GitHub Ranking Cuba
+<!-- # 🏆 GitHub Ranking Cuba
 <div align="center">
   <table>
     <tr>
@@ -49,7 +51,7 @@
       </td>
     </tr>
   </table>
-</div>
+</div> -->
 
 <!--
 **Dayron-Glez/Dayron-Glez** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
