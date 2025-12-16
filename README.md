@@ -43,11 +43,11 @@
       <td>
         <h3>Ranking entre desarrolladores cubanos</h3>
         <ul align="left">
-          <li>🥇 <b>Posición actual:</b> #180</li>
-          <li>🔥 <b>Contribuciones totales:</b> 284</li>
-          <li>📊 <b>Contribuciones públicas:</b> 142</li>
+          <li>🥇 <b>Posición actual:</b> #157</li>
+          <li>🔥 <b>Contribuciones totales:</b> 343</li>
+          <li>📊 <b>Contribuciones públicas:</b> 163</li>
         </ul>
-        <sub><i>Última actualización: 12/15/2025</i></sub>
+        <sub><i>Última actualización: 12/16/2025</i></sub>
       </td>
     </tr>
   </table>
