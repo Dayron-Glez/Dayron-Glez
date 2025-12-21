@@ -47,7 +47,7 @@
           <li>🔥 <b>Contribuciones totales:</b> 343</li>
           <li>📊 <b>Contribuciones públicas:</b> 163</li>
         </ul>
-        <sub><i>Última actualización: 12/20/2025</i></sub>
+        <sub><i>Última actualización: 12/21/2025</i></sub>
       </td>
     </tr>
   </table>
