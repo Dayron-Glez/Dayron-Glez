@@ -4,7 +4,6 @@
 
   **Software Engineer & Full Stack Developer**
 
-  [![Portfolio](https://img.shields.io/badge/Portfolio-0D1117?style=for-the-badge&logo=vercel&logoColor=2cb7ea)](https://dayronglez-portfolio.vercel.app)
   [![LinkedIn](https://img.shields.io/badge/LinkedIn-0D1117?style=for-the-badge&logo=linkedin&logoColor=2cb7ea)](https://linkedin.com/in/dayrongg)
   [![Medium](https://img.shields.io/badge/Medium-0D1117?style=for-the-badge&logo=medium&logoColor=2cb7ea)](https://medium.com/@dayronglezdev)
   [![Email](https://img.shields.io/badge/Email-0D1117?style=for-the-badge&logo=gmail&logoColor=2cb7ea)](mailto:dayronglezdev@gmail.com)
