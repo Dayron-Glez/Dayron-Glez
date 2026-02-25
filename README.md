@@ -77,23 +77,3 @@ Full Stack Developer with 3 years of experience building scalable web applicatio
   <sub>💡 Clean code is not written by following a set of rules. You don't become a software craftsman by learning a list of heuristics. Professionalism and craftsmanship come from values that drive disciplines. — Robert C. Martin</sub>
 </div>
 
-
-# 🏆 GitHub Ranking Cuba
-<div align="center">
-  <table>
-    <tr>
-      <td align="center">
-        <img width="50" src="https://github.com/tandpfun/skill-icons/blob/main/icons/Github-Dark.svg" alt="GitHub Rank">
-      </td>
-      <td>
-        <h3>Ranking entre desarrolladores cubanos</h3>
-        <ul align="left">
-          <li>🥇 <b>Posición actual:</b> #131</li>
-          <li>🔥 <b>Contribuciones totales:</b> 455</li>
-          <li>📊 <b>Contribuciones públicas:</b> 206</li>
-        </ul>
-        <sub><i>Última actualización: 2/25/2026</i></sub>
-      </td>
-    </tr>
-  </table>
-</div>
