@@ -59,13 +59,17 @@ Full Stack Developer with 3 years of experience building scalable web applicatio
 ### GitHub Analytics
 
 <div align="center">
-  <img width="49%" height="195px" src="https://github-readme-stats.vercel.app/api?username=Dayron-Glez&show_icons=true&count_private=true&hide_border=true&title_color=2cb7ea&icon_color=2cb7ea&text_color=c9d1d9&bg_color=0d1117" alt="Dayron's GitHub stats" />
-  <img width="41%" height="195px" src="https://github-readme-stats.vercel.app/api/top-langs/?username=Dayron-Glez&layout=compact&hide_border=true&title_color=2cb7ea&text_color=2cb7ea&bg_color=0d1117" alt="Most Used Languages" />
-</div>
-
-<div align="center">
   <img src="https://github-readme-streak-stats.herokuapp.com?user=Dayron-Glez&theme=transparent&hide_border=true&ring=2cb7ea&fire=2cb7ea&currStreakLabel=2cb7ea&sideLabels=c9d1d9&dates=555555&currStreakNum=c9d1d9&sideNums=c9d1d9" alt="GitHub Streak" />
 </div>
+
+<p align="center">
+<a href="https://github.com/AVS1508">
+  <img height="180em" src="https://github-readme-stats-eight-theta.vercel.app/api?username=Dayron-Glez&show_icons=true&theme=algolia&include_all_commits=true&count_private=true"/>
+  <img height="180em" src="https://github-readme-stats-eight-theta.vercel.app/api/top-langs/?username=Dayron-Glez&layout=compact&langs_count=8&theme=algolia"/>
+</a>
+</p>
+
+
 
 <div align="center">
   <img width="725em" src="https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=Dayron-Glez&theme=github_dark" alt="Profile Details" />
@@ -75,26 +79,4 @@ Full Stack Developer with 3 years of experience building scalable web applicatio
 
 <div align="center">
   <sub>💡 Clean code is not written by following a set of rules. You don't become a software craftsman by learning a list of heuristics. Professionalism and craftsmanship come from values that drive disciplines. — Robert C. Martin</sub>
-</div>
-
-
-
-# 🏆 GitHub Ranking Cuba
-<div align="center">
-  <table>
-    <tr>
-      <td align="center">
-        <img width="50" src="https://github.com/tandpfun/skill-icons/blob/main/icons/Github-Dark.svg" alt="GitHub Rank">
-      </td>
-      <td>
-        <h3>Ranking entre desarrolladores cubanos</h3>
-        <ul align="left">
-          <li>🥇 <b>Posición actual:</b> #131</li>
-          <li>🔥 <b>Contribuciones totales:</b> 455</li>
-          <li>📊 <b>Contribuciones públicas:</b> 206</li>
-        </ul>
-        <sub><i>Última actualización: 2/27/2026</i></sub>
-      </td>
-    </tr>
-  </table>
 </div>
